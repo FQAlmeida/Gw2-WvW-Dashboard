@@ -68,15 +68,16 @@
         </Content>
     </Drawer>
     <AppContent class="app-content">
-        <main>
+        <div class="main-content">
             <slot />
-        </main>
+        </div>
     </AppContent>
 </AutoAdjust>
 
 <style>
-    main {
+    .main-content {
         margin: 0 min(5vw, 5%);
         padding: min(3vh, 5%) 0;
     }
+
 </style>
