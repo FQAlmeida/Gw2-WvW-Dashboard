@@ -8,11 +8,7 @@
     import IconButton, { Icon } from "@smui/icon-button";
 
     let topAppBar: TopAppBar;
-    import Drawer, {
-        AppContent,
-        Content,
-        Header,
-    } from "@smui/drawer";
+    import Drawer, { AppContent, Content, Header } from "@smui/drawer";
     import List, { Item, Text, Graphic, Separator } from "@smui/list";
     import { mdiGithub, mdiChartLine } from "@mdi/js";
     import { Svg } from "@smui/common";
@@ -37,6 +33,8 @@
                 class="material-icons"
                 aria-label="github"
                 size="normal"
+                href="https://github.com/FQAlmeida/Gw2-WvW-Dashboard"
+                target="_blank"
             >
                 <Icon component={Svg} viewBox="0 0 24 24">
                     <path fill="currentColor" d={mdiGithub} />
