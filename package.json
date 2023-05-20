@@ -13,7 +13,13 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig tsconfig.json --watch"
   },
   "devDependencies": {
+    "@mdi/js": "^7.2.96",
+    "@smui/button": "^7.0.0-beta.8",
+    "@smui/drawer": "^7.0.0-beta.8",
+    "@smui/icon-button": "^7.0.0-beta.8",
     "@smui/layout-grid": "^7.0.0-beta.8",
+    "@smui/list": "^7.0.0-beta.8",
+    "@smui/top-app-bar": "^7.0.0-beta.8",
     "@sveltejs/adapter-auto": "^1.0.0",
     "@sveltejs/kit": "^1.0.12",
     "smui-theme": "^7.0.0-beta.8",
