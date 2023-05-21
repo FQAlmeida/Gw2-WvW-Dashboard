@@ -1,22 +1,89 @@
 <script lang="ts">
+    import LinearProgress from "@smui/linear-progress";
     import { onMount } from "svelte";
-    import { skirmishes, apiData } from "../stores/CurrentMatchup";
+    import { Line, Bar } from "svelte-chartjs";
+    import {
+        dataset,
+        dataset_summed,
+        fetchData,
+        fetching_progress,
+    } from "../stores/CurrentMatchup";
+
+    import {
+        CategoryScale,
+        Chart as ChartJS,
+        Title as ChartJSTitle,
+        Legend,
+        LineElement,
+        BarElement,
+        LinearScale,
+        PointElement,
+        TimeScale,
+        Tooltip,
+    } from "chart.js";
+    import "chartjs-adapter-luxon";
+    import LayoutGrid, { Cell } from "@smui/layout-grid";
+
+    ChartJS.register(
+        ChartJSTitle,
+        Tooltip,
+        Legend,
+        LineElement,
+        BarElement,
+        LinearScale,
+        PointElement,
+        CategoryScale,
+        TimeScale
+    );
 
     onMount(async () => {
-        fetch("https://api.guildwars2.com/v2/wvw/matches")
-            .then((response) => response.json())
-            .then((data) =>
-                fetch(`https://api.guildwars2.com/v2/wvw/matches?ids=${data}`)
-            )
-            .then((response) => response.json())
-            .then((data) => {
-                apiData.set(data);
-            })
-            .catch((error) => {
-                console.log(error);
-                return [];
-            });
+        await fetchData();
     });
 </script>
 
-<p>{$skirmishes}</p>
+{#if $fetching_progress.done}
+    <LayoutGrid>
+        <Cell span={6}>
+            <div class="mdc-typography--headline5">Skirmishes Scores</div>
+            <Bar
+                data={$dataset}
+                options={{
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: "time",
+                            stacked: true,
+                        },
+                        y: {
+                            stacked: true,
+                        },
+                    },
+                }}
+            />
+        </Cell>
+        <Cell span={6}>
+            <div class="mdc-typography--headline5">
+                Summed Skirmishes Scores
+            </div>
+            <Line
+                data={$dataset_summed}
+                options={{
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: "time",
+                        },
+                        y: {
+                            beginAtZero: true,
+                        },
+                    },
+                }}
+            />
+        </Cell>
+    </LayoutGrid>
+{:else}
+    <LinearProgress
+        progress={$fetching_progress.percentage}
+        closed={$fetching_progress.done}
+    />
+{/if}
