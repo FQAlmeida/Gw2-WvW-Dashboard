@@ -5,6 +5,8 @@
     import {
         dataset,
         dataset_summed,
+        dataset_victory_points,
+        dataset_summed_victory_points,
         fetchData,
         fetching_progress,
     } from "../stores/CurrentMatchup";
@@ -67,6 +69,43 @@
             </div>
             <Line
                 data={$dataset_summed}
+                options={{
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: "time",
+                        },
+                        y: {
+                            beginAtZero: true,
+                        },
+                    },
+                }}
+            />
+        </Cell>
+        <Cell span={6}>
+            <div class="mdc-typography--headline5">Victory Points</div>
+            <Bar
+                data={$dataset_victory_points}
+                options={{
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: "time",
+                            stacked: true,
+                        },
+                        y: {
+                            stacked: true,
+                        },
+                    },
+                }}
+            />
+        </Cell>
+        <Cell span={6}>
+            <div class="mdc-typography--headline5">
+                Summed Victory Points
+            </div>
+            <Line
+                data={$dataset_summed_victory_points}
                 options={{
                     responsive: true,
                     scales: {

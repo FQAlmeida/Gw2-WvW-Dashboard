@@ -101,7 +101,6 @@ export const skirmish = derived([skirmishes, selected_matchup], ([$skirmishes, $
 });
 
 export const skirmish_points = derived(skirmish, ($skirmish) => {
-    console.log($skirmish);
     if ($skirmish == undefined) {
         return undefined;
     }
@@ -117,7 +116,6 @@ export const skirmish_points = derived(skirmish, ($skirmish) => {
 });
 
 export const skirmish_summed_points = derived(skirmish_points, ($skirmish_points) => {
-    console.log($skirmish_points);
     if ($skirmish_points == undefined) {
         return undefined;
     }
@@ -125,6 +123,50 @@ export const skirmish_summed_points = derived(skirmish_points, ($skirmish_points
         red: $skirmish_points.red.reduce((prev, current) => [...prev, (prev.at(-1) || 0) + current], [0]),
         green: $skirmish_points.green.reduce((prev, current) => [...prev, (prev.at(-1) || 0) + current], [0]),
         blue: $skirmish_points.blue.reduce((prev, current) => [...prev, (prev.at(-1) || 0) + current], [0])
+    };
+});
+
+export const victory_points = derived(skirmish_points, ($skirmish_points) => {
+    if ($skirmish_points == undefined) {
+        return undefined;
+    }
+    const zip = (a: number[], b: number[], c: number[]) => a.map((k, i) => [k, b[i], c[i]]);
+    const zipped = zip($skirmish_points.red, $skirmish_points.green, $skirmish_points.blue);
+    const vp = zipped.map(([red, green, blue]) => {
+        const get_vp = (current: number, other_1: number, other_2: number) => {
+            if (current >= Math.max(other_1, other_2)) {
+                return 5;
+            } if (current >= Math.min(other_1, other_2)) {
+                return 4;
+            }
+            return 3;
+        };
+        const red_vp = get_vp(red, green, blue);
+        const green_vp = get_vp(green, red, blue);
+        const blue_vp = get_vp(blue, red, green);
+        return {
+            red: red_vp,
+            green: green_vp,
+            blue: blue_vp,
+        };
+    });
+    return vp.reduce<{ red: number[], green: number[], blue: number[], }>((prev, current) => {
+        return {
+            red: [...prev.red, current.red],
+            green: [...prev.green, current.green],
+            blue: [...prev.blue, current.blue],
+        };
+    }, { red: [], green: [], blue: [], });
+});
+
+export const victory_summed_points = derived(victory_points, ($victory_points) => {
+    if ($victory_points == undefined) {
+        return undefined;
+    }
+    return {
+        red: $victory_points.red.reduce((prev, current) => [...prev, (prev.at(-1) || 0) + current], [0]),
+        green: $victory_points.green.reduce((prev, current) => [...prev, (prev.at(-1) || 0) + current], [0]),
+        blue: $victory_points.blue.reduce((prev, current) => [...prev, (prev.at(-1) || 0) + current], [0])
     };
 });
 
@@ -147,8 +189,6 @@ export const all_datetimes = derived(skirmish, ($skirmish) => {
             break;
         }
     }
-    console.table(datetimes);
-
     return datetimes;
 });
 
@@ -236,3 +276,87 @@ export const dataset_summed = derived([skirmish_summed_points, all_datetimes], (
     return data;
 });
 
+
+export const dataset_victory_points = derived([victory_points, all_datetimes], ([$victory_points, $all_datetimes]) => {
+    let config: Omit<
+        ChartDataset<"bar", (number | [number, number])[]>,
+        "borderColor" | "pointBorderColor" | "label" | "data" | "backgroundColor"
+    > = {
+    };
+    let data: ChartData<"bar", (number | [number, number])[], DateTime | number> = {
+        labels: $all_datetimes?.slice(0, $victory_points?.red.length),
+        datasets: [{
+            ...config,
+            label: "red",
+            backgroundColor: "rgba(255, 0, 0, 0.5)",
+            borderColor: "rgb(255, 0, 0)",
+            data: $victory_points?.red || [],
+        },
+        {
+            ...config,
+            label: "green",
+            backgroundColor: "rgba(0, 255, 0, 0.5)",
+            borderColor: "rgb(0, 255, 0)",
+            data: $victory_points?.green || [],
+        },
+        {
+            ...config,
+            label: "blue",
+            backgroundColor: "rgba(0, 0, 255, 0.5)",
+            borderColor: "rgb(0, 0, 255)",
+            data: $victory_points?.blue || [],
+        },
+        ]
+    };
+    return data;
+});
+
+export const dataset_summed_victory_points = derived([victory_summed_points, all_datetimes], ([$victory_summed_points, $all_datetimes]) => {
+    let config: Omit<
+        ChartDataset<"line", (number | Point)[]>,
+        "borderColor" | "pointBorderColor" | "label" | "data" | "backgroundColor"
+    > = {
+        fill: true,
+        borderCapStyle: "round",
+        borderDash: [],
+        borderDashOffset: 0.0,
+        borderJoinStyle: "round",
+        pointBackgroundColor: "rgb(255, 255, 255)",
+        pointBorderWidth: 5,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: "rgb(0, 0, 0)",
+        pointHoverBorderColor: "rgba(220, 220, 220, 1)",
+        pointHoverBorderWidth: 2,
+        pointRadius: 1,
+        pointHitRadius: 10,
+    };
+    let data: ChartData<"line", (number | Point)[], DateTime | number> = {
+        labels: $all_datetimes,
+        datasets: [{
+            ...config,
+            label: "red",
+            backgroundColor: "rgba(255, 0, 0, 0.5)",
+            borderColor: "rgb(255, 0, 0)",
+            pointBorderColor: "rgb(255, 0, 0)",
+            data: $victory_summed_points?.red || [],
+        },
+        {
+            ...config,
+            label: "green",
+            backgroundColor: "rgba(0, 255, 0, 0.5)",
+            borderColor: "rgb(0, 255, 0)",
+            pointBorderColor: "rgb(0, 255, 0)",
+            data: $victory_summed_points?.green || [],
+        },
+        {
+            ...config,
+            label: "blue",
+            backgroundColor: "rgba(0, 0, 255, 0.5)",
+            borderColor: "rgb(0, 0, 255)",
+            pointBorderColor: "rgb(0, 0, 255)",
+            data: $victory_summed_points?.blue || [],
+        },
+        ]
+    };
+    return data;
+});
