@@ -9,8 +9,10 @@
         dataset_summed_victory_points,
         fetchData,
         fetching_progress,
+        skirmish_summed_points,
+        all_datetimes,
     } from "../stores/CurrentMatchup";
-
+    import AnnotationPlugin from "chartjs-plugin-annotation";
     import {
         CategoryScale,
         Chart as ChartJS,
@@ -25,11 +27,13 @@
     } from "chart.js";
     import "chartjs-adapter-luxon";
     import LayoutGrid, { Cell } from "@smui/layout-grid";
+    import { linear_regression } from "../regression/LinearRegression";
 
     ChartJS.register(
         ChartJSTitle,
         Tooltip,
         Legend,
+        AnnotationPlugin,
         LineElement,
         BarElement,
         LinearScale,
@@ -70,6 +74,78 @@
             <Line
                 data={$dataset_summed}
                 options={{
+                    plugins: {
+                        // annotation: {
+                        //     annotations: {
+                        //         line_red: {
+                        //             type: "line",
+                        //             yMin: linear_regression(
+                        //                 $skirmish_summed_points?.red || [],
+                        //                 ($all_datetimes?.length || 0) -
+                        //                     ($skirmish_summed_points?.red
+                        //                         .length || 0)
+                        //             ).at(0),
+                        //             yMax: linear_regression(
+                        //                 $skirmish_summed_points?.red || [],
+                        //                 ($all_datetimes?.length || 0) -
+                        //                     ($skirmish_summed_points?.red
+                        //                         .length || 0)
+                        //             ).at(-1),
+                        //             xMin: $all_datetimes?.at(
+                        //                 ($skirmish_summed_points?.red.length ||
+                        //                     1) - 1
+                        //             ),
+                        //             xMax: $all_datetimes?.at(-1) || 0,
+                        //             borderColor: "rgba(255, 0, 0, 0.3)",
+                        //             borderWidth: 2,
+                        //         },
+                        //         line_green: {
+                        //             type: "line",
+                        //             yMin: linear_regression(
+                        //                 $skirmish_summed_points?.green || [],
+                        //                 ($all_datetimes?.length || 0) -
+                        //                     ($skirmish_summed_points?.green
+                        //                         .length || 0)
+                        //             ).at(0),
+                        //             yMax: linear_regression(
+                        //                 $skirmish_summed_points?.green || [],
+                        //                 ($all_datetimes?.length || 0) -
+                        //                     ($skirmish_summed_points?.green
+                        //                         .length || 0)
+                        //             ).at(-1),
+                        //             xMin: $all_datetimes?.at(
+                        //                 ($skirmish_summed_points?.green.length ||
+                        //                     1) - 1
+                        //             ),
+                        //             xMax: $all_datetimes?.at(-1) || 0,
+                        //             borderColor: "rgb(0, 255, 0)",
+                        //             borderWidth: 2,
+                        //         },
+                        //         line_blue: {
+                        //             type: "line",
+                        //             yMin: linear_regression(
+                        //                 $skirmish_summed_points?.blue || [],
+                        //                 ($all_datetimes?.length || 0) -
+                        //                     ($skirmish_summed_points?.blue
+                        //                         .length || 0)
+                        //             ).at(0),
+                        //             yMax: linear_regression(
+                        //                 $skirmish_summed_points?.blue || [],
+                        //                 ($all_datetimes?.length || 0) -
+                        //                     ($skirmish_summed_points?.blue
+                        //                         .length || 0)
+                        //             ).at(-1),
+                        //             xMin: $all_datetimes?.at(
+                        //                 ($skirmish_summed_points?.blue.length ||
+                        //                     1) - 1
+                        //             ),
+                        //             xMax: $all_datetimes?.at(-1) || 0,
+                        //             borderColor: "rgb(0, 0, 255)",
+                        //             borderWidth: 2,
+                        //         },
+                        //     },
+                        // },
+                    },
                     responsive: true,
                     scales: {
                         x: {
@@ -101,9 +177,7 @@
             />
         </Cell>
         <Cell span={6}>
-            <div class="mdc-typography--headline5">
-                Summed Victory Points
-            </div>
+            <div class="mdc-typography--headline5">Summed Victory Points</div>
             <Line
                 data={$dataset_summed_victory_points}
                 options={{

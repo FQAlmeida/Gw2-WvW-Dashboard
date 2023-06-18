@@ -85,7 +85,7 @@ export const skirmishes = derived(api_data, ($apiData) => {
             end_time: matchup.end_time,
             skirmishes: matchup.skirmishes.sort((skirmish_1, skirmish_2) => {
                 return skirmish_1.id - skirmish_2.id;
-            })
+            }).slice(0, -1)
         };
     });
 });
