@@ -6,7 +6,7 @@
     "smui-theme-light": "smui-theme compile static/smui.css -i src/theme",
     "smui-theme-dark": "smui-theme compile static/smui-dark.css -i src/theme/dark",
     "pre-run": "bun run prepare",
-    "dev": "bun run pre-run && vite dev",
+    "dev": "bun run pre-run && bunx --bun vite",
     "build": "bun run pre-run && vite build",
     "preview": "bun run pre-run && vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig tsconfig.json",
