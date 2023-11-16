@@ -2,7 +2,7 @@
   "name": "gw2-wvw-dashboard",
   "version": "0.0.33",
   "scripts": {
-    "prepare": "bun run smui-theme-light && bun run smui-theme-dark",
+    "prepare": "bun run smui-theme-light && bun run smui-theme-dark && svelte-kit sync",
     "smui-theme-light": "smui-theme compile static/smui.css -i src/theme",
     "smui-theme-dark": "smui-theme compile static/smui-dark.css -i src/theme/dark",
     "pre-run": "bun run prepare",
@@ -43,11 +43,15 @@
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
+    "@tensorflow/tfjs": "^4.13.0",
+    "@tensorflow/tfjs-node": "^4.13.0",
     "chart.js": "^4.3.0",
     "chartjs-plugin-annotation": "^3.0.1",
     "luxon": "^3.3.0",
     "regression": "^2.0.1",
     "rollup": "^3.7.5",
+    "sklearn": "^0.3.0",
     "svelte-chartjs": "^3.1.2"
-  }
+  },
+  "trustedDependencies": ["@tensorflow/tfjs-node"]
 }
