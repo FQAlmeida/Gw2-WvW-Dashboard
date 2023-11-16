@@ -1,7 +1,7 @@
 import { browser } from "$app/environment";
 
 async function load_model() {
-    const tf = await load_tf();
+    const tf = await import("@tensorflow/tfjs");
     let model = await tf.loadLayersModel("ml_models/js/model.json");
     return model;
 }
