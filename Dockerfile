@@ -1,9 +1,9 @@
-FROM oven/bun
+FROM oven/bun:latest
 WORKDIR /app
-COPY package.json package.json
-# COPY bun.lockb bun.lockb
-RUN bun install
+COPY package.json ./
+COPY bun.lockb ./
+RUN ["bun", "install"]
 COPY . .
-RUN bun run build
+RUN ["bun", "run", "build"]
 EXPOSE 3000
 ENTRYPOINT ["bun", "./build"]
