@@ -9,8 +9,6 @@
         dataset_summed_victory_points,
         fetchData,
         fetching_progress,
-        skirmish_summed_points,
-        all_datetimes,
     } from "../stores/CurrentMatchup";
     import AnnotationPlugin from "chartjs-plugin-annotation";
     import {
@@ -27,7 +25,6 @@
     } from "chart.js";
     import "chartjs-adapter-luxon";
     import LayoutGrid, { Cell } from "@smui/layout-grid";
-    import { linear_regression } from "../regression/LinearRegression";
 
     ChartJS.register(
         ChartJSTitle,

@@ -43,14 +43,17 @@
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
+    "@smui/select": "^7.0.0-beta.15",
     "@tensorflow/tfjs": "^4.13.0",
     "@tensorflow/tfjs-node": "^4.13.0",
     "chart.js": "^4.3.0",
     "chartjs-plugin-annotation": "^3.0.1",
+    "import-sync": "^2.1.2",
     "luxon": "^3.3.0",
     "regression": "^2.0.1",
     "rollup": "^3.7.5",
     "sklearn": "^0.3.0",
+    "svelte-adapter-bun": "^0.5.1",
     "svelte-chartjs": "^3.1.2"
   },
   "trustedDependencies": ["@tensorflow/tfjs-node"]

@@ -11,11 +11,19 @@
     import Drawer, { AppContent, Content, Header } from "@smui/drawer";
     import List, { Item, Text, Graphic, Separator } from "@smui/list";
     import { mdiGithub, mdiChartLine } from "@mdi/js";
+    import Select, { Option } from "@smui/select";
+
+    import { selected_matchup, matchup_ids } from "../stores/CurrentMatchup";
 
     let open = false;
 </script>
 
-<TopAppBar bind:this={topAppBar} variant="fixed" dense style={"{z-index: 99999}"}}>
+<TopAppBar
+    bind:this={topAppBar}
+    variant="fixed"
+    dense
+    style="{'{z-index: 99999}'}}"
+>
     <Row>
         <Section>
             <IconButton
@@ -72,10 +80,19 @@
                     <Text>Regression</Text>
                 </Item>
             </List>
+            <Separator />
         </Content>
     </Drawer>
     <AppContent class="app-content">
         <div class="main-content">
+            <Select bind:value={$selected_matchup} label="Select Matchup">
+                {#if $matchup_ids}
+                    {#each $matchup_ids as id}
+                        <Option value={id}>{id}</Option>
+                    {/each}
+                {/if}
+            </Select>
+            {$selected_matchup}
             <slot />
         </div>
     </AppContent>
@@ -86,5 +103,4 @@
         margin: 0 min(5vw, 5%);
         padding: min(3vh, 5%) 0;
     }
-
 </style>

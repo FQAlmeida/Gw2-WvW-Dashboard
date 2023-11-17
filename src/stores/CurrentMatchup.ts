@@ -23,7 +23,7 @@ export interface WvwEndpointData {
 export const api_data = writable<WvwEndpointData[]>([]);
 
 export const matchup_ids = writable<string[]>([]);
-export const selected_matchup = writable<string | undefined>();
+export const selected_matchup = writable<string>("2-1");
 
 export const fetching_progress = writable<{ done: boolean, percentage: number; }>({ done: false, percentage: 0 });
 
@@ -36,7 +36,7 @@ export const fetchData = async () => {
         })
         .then((data: string[]) => {
             matchup_ids.set(data);
-            selected_matchup.set(data.at(0));
+            // selected_matchup.set(data.at(0));
             fetching_progress.set({ done: false, percentage: 50 });
             return fetch(
                 `https://api.guildwars2.com/v2/wvw/matches?ids=${data}`
@@ -73,12 +73,11 @@ export const fetchData = async () => {
         )
         .catch((error) => {
             fetching_progress.set({ done: true, percentage: 0 });
-            console.log(error);
         });
 };
 
-export const skirmishes = derived(api_data, ($apiData) => {
-    return $apiData.map((matchup) => {
+export const skirmishes = derived(api_data, ($api_data) => {
+    return $api_data.map((matchup) => {
         return {
             id: matchup.id,
             start_time: matchup.start_time,
@@ -91,10 +90,7 @@ export const skirmishes = derived(api_data, ($apiData) => {
 });
 
 export const skirmish = derived([skirmishes, selected_matchup], ([$skirmishes, $selected_matchup]) => {
-    if ($selected_matchup == undefined) {
-        return undefined;
-    }
-    if ($skirmishes == undefined) {
+    if ($selected_matchup == undefined || $skirmishes == undefined) {
         return undefined;
     }
     return $skirmishes.find(matchup => matchup.id == $selected_matchup);
