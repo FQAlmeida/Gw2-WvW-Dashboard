@@ -2,15 +2,16 @@
   "name": "gw2-wvw-dashboard",
   "version": "0.0.33",
   "scripts": {
-    "prepare": "bun run smui-theme-light && bun run smui-theme-dark && svelte-kit sync",
+    "tsync": "bun run smui-theme-light && bun run smui-theme-dark && svelte-kit sync",
     "smui-theme-light": "smui-theme compile static/smui.css -i src/theme",
     "smui-theme-dark": "smui-theme compile static/smui-dark.css -i src/theme/dark",
-    "pre-run": "bun run prepare",
+    "pre-run": "bun run tsync",
     "dev": "bun run pre-run && bunx --bun vite",
     "build": "bun run pre-run && vite build",
     "preview": "bun run pre-run && vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig tsconfig.json",
-    "check:watch": "svelte-kit sync && svelte-check --tsconfig tsconfig.json --watch"
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig tsconfig.json --watch",
+    "start": "bun run build && bun ./build"
   },
   "devDependencies": {
     "@material/typography": "^14.0.0",
