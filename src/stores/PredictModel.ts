@@ -44,46 +44,45 @@ export const predicted_skirmish_points = derived([skirmish_points, all_datetimes
         };
     }
 
+    const predicted_points_red = [...$skirmish_points.red];
+    const predicted_points_green = [...$skirmish_points.green];
+    const predicted_points_blue = [...$skirmish_points.blue];
+
+    for (let index = predicted_points_red.length; index < $all_datetimes.length; index++) {
+        const sk_values = predicted_points_red.slice(index - 13, index - 1);
+        const tensor = transform_to_input([sk_values]);
+        const pred = $model.predict(tensor);
+        if (pred instanceof Array) {
+            predicted_points_red.push(Math.round(pred.at(0)?.mul(14711.0).reshape([1]).arraySync().at(0)));
+            continue;
+        }
+        predicted_points_red.push(Math.round(pred.mul(14711.0).reshape([1]).arraySync().at(0)));
+    }
+    for (let index = predicted_points_green.length; index < $all_datetimes.length; index++) {
+        const sk_values = predicted_points_green.slice(index - 13, index - 1);
+        const tensor = transform_to_input([sk_values]);
+        const pred = $model.predict(tensor);
+        if (pred instanceof Array) {
+            predicted_points_green.push(Math.round(pred.at(0)?.mul(14711.0).reshape([1]).arraySync().at(0)));
+            continue;
+        }
+        predicted_points_green.push(Math.round(pred.mul(14711.0).reshape([1]).arraySync().at(0)));
+    }
+    for (let index = predicted_points_blue.length; index < $all_datetimes.length; index++) {
+        const sk_values = predicted_points_blue.slice(index - 13, index - 1);
+        const tensor = transform_to_input([sk_values]);
+        const pred = $model.predict(tensor);
+        if (pred instanceof Array) {
+            predicted_points_blue.push(Math.round(pred.at(0)?.mul(14711.0).reshape([1]).arraySync().at(0)));
+            continue;
+        }
+        predicted_points_blue.push(Math.round(pred.mul(14711.0).reshape([1]).arraySync().at(0)));
+    }
+
     const d = {
-        red: $all_datetimes.slice(1).map((date, index) => {
-            if (date <= now) {
-                return $skirmish_points.red.at(index)||0;
-            }
-
-            const sk_values = $skirmish_points.red.slice(index - 13, index - 1);
-            const tensor = transform_to_input([sk_values]);
-            const pred = $model.predict(tensor);
-            if (pred instanceof Array) {
-                return Math.round(pred.at(0)?.mul(14711.0).reshape([1]).arraySync().at(0));
-            }
-            return Math.round(pred.mul(14711.0).reshape([1]).arraySync().at(0));
-        }),
-        green: $all_datetimes.slice(1).map((date, index) => {
-            if (date <= now) {
-                return $skirmish_points.green.at(index)||0;
-            }
-
-            const sk_values = $skirmish_points.green.slice(index - 13, index - 1);
-            const tensor = transform_to_input([sk_values]);
-            const pred = $model.predict(tensor);
-            if (pred instanceof Array) {
-                return Math.round(pred.at(0)?.mul(14711.0).reshape([1]).arraySync().at(0));
-            }
-            return Math.round(pred.mul(14711.0).reshape([1]).arraySync().at(0));
-        }),
-        blue: $all_datetimes.slice(1).map((date, index) => {
-            if (date <= now) {
-                return $skirmish_points.blue.at(index)||0;
-            }
-
-            const sk_values = $skirmish_points.blue.slice(index - 13, index - 1);
-            const tensor = transform_to_input([sk_values]);
-            const pred = $model.predict(tensor);
-            if (pred instanceof Array) {
-                return Math.round(pred.at(0)?.mul(14711.0).reshape([1]).arraySync().at(0));
-            }
-            return Math.round(pred.mul(14711.0).reshape([1]).arraySync().at(0));
-        }),
+        red: predicted_points_red,
+        green: predicted_points_green,
+        blue: predicted_points_blue,
     };
     return d;
 });
