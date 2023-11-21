@@ -3,7 +3,7 @@ import { load_model as load_lstm_model } from "./load_model/LoadLSTMModel";
 import { browser } from "$app/environment";
 import { tensor, type LayersModel, Rank, Tensor } from "@tensorflow/tfjs";
 import { all_datetimes, skirmish_points } from "./CurrentMatchup";
-import { DateTime } from "luxon";
+import type { DateTime } from "luxon";
 import type { ChartDataset, ChartData, Point } from "chart.js";
 import { linear_regression } from "../regression/LinearRegression";
 
@@ -27,12 +27,11 @@ export const transform_to_input = (values: Array<Array<number>>): Tensor<Rank> =
     const t = tensor(values).reshape([size, 12, 1]).div(14711.0);
     return t;
 };
-
-export const predicted_skirmish_points = derived([skirmish_points, all_datetimes, model], ([$skirmish_points, $all_datetimes, $model]) => {
+const prediction_cache = writable<{ [key: string]: number; }>({});
+export const predicted_skirmish_points = derived([skirmish_points, all_datetimes, model, prediction_cache], ([$skirmish_points, $all_datetimes, $model, $prediction_cache]) => {
     if ($skirmish_points == undefined || $all_datetimes == undefined || $skirmish_points.red.length == 0) {
         return undefined;
     }
-    const now = DateTime.now();
     if ($skirmish_points.red.length < 13) {
         const red_reg = linear_regression($skirmish_points.red, $all_datetimes.length - $skirmish_points.red.length);
         const green_reg = linear_regression($skirmish_points.green, $all_datetimes.length - $skirmish_points.red.length);
@@ -51,32 +50,56 @@ export const predicted_skirmish_points = derived([skirmish_points, all_datetimes
     for (let index = predicted_points_red.length; index < $all_datetimes.length; index++) {
         const sk_values = predicted_points_red.slice(index - 13, index - 1);
         const tensor = transform_to_input([sk_values]);
-        const pred = $model.predict(tensor);
-        if (pred instanceof Array) {
-            predicted_points_red.push(Math.round(pred.at(0)?.mul(14711.0).reshape([1]).arraySync().at(0)));
+        if (tensor.toString() in $prediction_cache) {
+            const response = $prediction_cache[tensor.toString()];
+            predicted_points_red.push(response);
             continue;
         }
-        predicted_points_red.push(Math.round(pred.mul(14711.0).reshape([1]).arraySync().at(0)));
+        const pred = $model.predict(tensor);
+        let response = undefined;
+        if (pred instanceof Array) {
+            response = Math.round(pred.at(0)?.mul(14711.0).reshape([1]).arraySync().at(0));
+        } else {
+            response = Math.round(pred.mul(14711.0).reshape([1]).arraySync().at(0));
+        }
+        $prediction_cache[tensor.toString()] = response;
+        predicted_points_red.push(response);
     }
     for (let index = predicted_points_green.length; index < $all_datetimes.length; index++) {
         const sk_values = predicted_points_green.slice(index - 13, index - 1);
         const tensor = transform_to_input([sk_values]);
-        const pred = $model.predict(tensor);
-        if (pred instanceof Array) {
-            predicted_points_green.push(Math.round(pred.at(0)?.mul(14711.0).reshape([1]).arraySync().at(0)));
+        if (tensor.toString() in $prediction_cache) {
+            const response = $prediction_cache[tensor.toString()];
+            predicted_points_green.push(response);
             continue;
         }
-        predicted_points_green.push(Math.round(pred.mul(14711.0).reshape([1]).arraySync().at(0)));
+        const pred = $model.predict(tensor);
+        let response = undefined;
+        if (pred instanceof Array) {
+            response = Math.round(pred.at(0)?.mul(14711.0).reshape([1]).arraySync().at(0));
+        } else {
+            response = Math.round(pred.mul(14711.0).reshape([1]).arraySync().at(0));
+        }
+        $prediction_cache[tensor.toString()] = response;
+        predicted_points_green.push(response);
     }
     for (let index = predicted_points_blue.length; index < $all_datetimes.length; index++) {
         const sk_values = predicted_points_blue.slice(index - 13, index - 1);
         const tensor = transform_to_input([sk_values]);
-        const pred = $model.predict(tensor);
-        if (pred instanceof Array) {
-            predicted_points_blue.push(Math.round(pred.at(0)?.mul(14711.0).reshape([1]).arraySync().at(0)));
+        if (tensor.toString() in $prediction_cache) {
+            const response = $prediction_cache[tensor.toString()];
+            predicted_points_blue.push(response);
             continue;
         }
-        predicted_points_blue.push(Math.round(pred.mul(14711.0).reshape([1]).arraySync().at(0)));
+        const pred = $model.predict(tensor);
+        let response = undefined;
+        if (pred instanceof Array) {
+            response = Math.round(pred.at(0)?.mul(14711.0).reshape([1]).arraySync().at(0));
+        } else {
+            response = Math.round(pred.mul(14711.0).reshape([1]).arraySync().at(0));
+        }
+        $prediction_cache[tensor.toString()] = response;
+        predicted_points_blue.push(response);
     }
 
     const d = {
