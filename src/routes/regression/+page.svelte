@@ -37,7 +37,7 @@
         LinearScale,
         PointElement,
         CategoryScale,
-        TimeScale
+        TimeScale,
     );
 
     onMount(async () => {

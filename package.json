@@ -5,7 +5,7 @@
     "tsync": "bun run smui-theme-light && bun run smui-theme-dark && svelte-kit sync",
     "smui-theme-light": "smui-theme compile static/smui.css -i src/theme",
     "smui-theme-dark": "smui-theme compile static/smui-dark.css -i src/theme/dark",
-    "pre-run": "svelte-kit sync",
+    "pre-run": "bun run tsync",
     "dev": "bun run pre-run && bunx --bun vite",
     "build": "bun run pre-run && vite build",
     "preview": "bun run pre-run && vite preview",
